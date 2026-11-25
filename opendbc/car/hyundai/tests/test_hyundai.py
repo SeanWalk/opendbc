@@ -2,7 +2,7 @@ import unittest
 
 from opendbc.car import gen_empty_fingerprint
 from opendbc.car.structs import CarParams
-from opendbc.car.fw_versions import build_fw_dict
+from opendbc.car.fw_versions import build_fw_dict, match_fw_to_car
 from opendbc.car.hyundai.interface import CarInterface
 from opendbc.car.hyundai.hyundaicanfd import CanBus
 from opendbc.car.hyundai.radar_interface import RADAR_START_ADDR
@@ -52,6 +52,22 @@ def cars_with(flags):
 
 
 class TestHyundaiFingerprint(unittest.TestCase):
+  def test_mufasa_firmware_match_without_eps(self):
+    car_fw = [
+      CarParams.CarFw(ecu=Ecu.fwdRadar, address=0x7d0, brand="hyundai",
+                      fwVersion=b'\xf1\x00NU2_ RDR -----      1.00 1.00 99110-MA300         '),
+      CarParams.CarFw(ecu=Ecu.fwdCamera, address=0x7c4, brand="hyundai",
+                      fwVersion=b'\xf1\x00NU2 MFC  AT EUR LHD 1.00 1.02 99211-MA300 230502'),
+    ]
+    _, matches = match_fw_to_car(car_fw, '', log=False)
+    assert matches == {CAR.HYUNDAI_MUFASA}
+
+    fingerprint = gen_empty_fingerprint()
+    fingerprint[CanBus(None, fingerprint).CAM] = [0x110]
+    CP = CarInterface.get_params(CAR.HYUNDAI_MUFASA, fingerprint, car_fw, False, False, False)
+    assert CP.pcmCruise
+    assert CP.flags & HyundaiFlags.CANFD_LKA_STEER_MSG
+
   def test_feature_detection(self):
     # LKA steering
     for lka_steering in (True, False):

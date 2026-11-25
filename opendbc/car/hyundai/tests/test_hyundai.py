@@ -56,8 +56,13 @@ class TestHyundaiFingerprint(unittest.TestCase):
     car_fw = [
       CarParams.CarFw(ecu=Ecu.fwdRadar, address=0x7d0, brand="hyundai",
                       fwVersion=b'\xf1\x00NU2_ RDR -----      1.00 1.00 99110-MA300         '),
+      CarParams.CarFw(ecu=Ecu.fwdRadar, address=0x7d0, brand="hyundai",
+                      fwVersion=b'\xf1\x8b #\x07\x16'),
+      CarParams.CarFw(ecu=Ecu.combinationMeter, address=0x7c6, brand="hyundai", fwVersion=b'\xf1\x002C6'),
       CarParams.CarFw(ecu=Ecu.fwdCamera, address=0x7c4, brand="hyundai",
                       fwVersion=b'\xf1\x00NU2 MFC  AT EUR LHD 1.00 1.02 99211-MA300 230502'),
+      CarParams.CarFw(ecu=Ecu.hvac, address=0x7b3, brand="hyundai",
+                      fwVersion=b'\xf1\x00NU2\x00\x00\x0097255-MA000UNIT-HEATER CONTROL\x001.00.11NU2DATC(-)0.1\xaa\xaa\xaa\xaa\xaa'),
     ]
     _, matches = match_fw_to_car(car_fw, '', log=False)
     assert matches == {CAR.HYUNDAI_MUFASA}
@@ -66,6 +71,7 @@ class TestHyundaiFingerprint(unittest.TestCase):
     fingerprint[CanBus(None, fingerprint).CAM] = [0x110]
     CP = CarInterface.get_params(CAR.HYUNDAI_MUFASA, fingerprint, car_fw, False, False, False)
     assert CP.pcmCruise
+    assert CP.flags & HyundaiFlags.CANFD
     assert CP.flags & HyundaiFlags.CANFD_LKA_STEER_MSG
 
   def test_feature_detection(self):

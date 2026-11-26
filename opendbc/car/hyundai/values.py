@@ -385,6 +385,7 @@ class CAR(Platforms):
   HYUNDAI_MUFASA = HyundaiCanFDPlatformConfig(
     [HyundaiCarDocs("Hyundai Mufasa (without HDA II) 2023-26", car_parts=CarParts.common([CarHarness.hyundai_n]))],
     CarSpecs(wheelbase=2.68, steerRatio=13.7, tireStiffnessFactor=0.385),
+    flags=HyundaiFlags.CANFD_ALT_BUTTONS,
   )
   HYUNDAI_SANTA_CRUZ_1ST_GEN = HyundaiCanFDPlatformConfig(
     [HyundaiCarDocs("Hyundai Santa Cruz 2022-24", car_parts=CarParts.common([CarHarness.hyundai_n]))],

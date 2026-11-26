@@ -92,6 +92,14 @@ class TestHyundaiFingerprint(unittest.TestCase):
       CP = CarInterface.get_params(CAR.HYUNDAI_SONATA, fingerprint, [], False, False, False)
       assert CP.radarUnavailable != radar
 
+  def test_mufasa_alternate_cruise_buttons_with_lka(self):
+    fingerprint = gen_empty_fingerprint()
+    fingerprint[1][0x1aa] = 8  # CRUISE_BUTTONS_ALT on ECAN
+    fingerprint[2][0x110] = 8  # LKAS_ALT on camera CAN
+    CP = CarInterface.get_params(CAR.HYUNDAI_MUFASA, fingerprint, [], False, False, False)
+    assert CP.flags & HyundaiFlags.CANFD_ALT_BUTTONS
+    assert CP.flags & HyundaiFlags.CANFD_LKA_STEER_MSG
+
   def test_alternate_limits(self):
     # Alternate lateral control limits, for high torque cars, verify Panda safety mode flag is set
     fingerprint = gen_empty_fingerprint()

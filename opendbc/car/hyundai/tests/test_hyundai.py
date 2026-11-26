@@ -99,6 +99,11 @@ class TestHyundaiFingerprint(unittest.TestCase):
     CP = CarInterface.get_params(CAR.HYUNDAI_MUFASA, fingerprint, [], False, False, False)
     assert CP.flags & HyundaiFlags.CANFD_ALT_BUTTONS
     assert CP.flags & HyundaiFlags.CANFD_LKA_STEER_MSG
+    assert not CP.flags & HyundaiFlags.CANFD_LFA_SUPPRESS
+
+    fingerprint[2][0x362] = 32
+    CP_WITH_SUPPRESS = CarInterface.get_params(CAR.HYUNDAI_MUFASA, fingerprint, [], False, False, False)
+    assert CP_WITH_SUPPRESS.flags & HyundaiFlags.CANFD_LFA_SUPPRESS
 
   def test_alternate_limits(self):
     # Alternate lateral control limits, for high torque cars, verify Panda safety mode flag is set

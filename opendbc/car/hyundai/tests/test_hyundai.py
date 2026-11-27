@@ -97,13 +97,19 @@ class TestHyundaiFingerprint(unittest.TestCase):
     fingerprint[1][0x1aa] = 8  # CRUISE_BUTTONS_ALT on ECAN
     fingerprint[2][0x110] = 8  # LKAS_ALT on camera CAN
     CP = CarInterface.get_params(CAR.HYUNDAI_MUFASA, fingerprint, [], False, False, False)
+    CAN = CanBus(CP)
+    assert (CAN.ECAN, CAN.ACAN, CAN.CAM) == (1, 0, 2)
     assert CP.flags & HyundaiFlags.CANFD_ALT_BUTTONS
     assert CP.flags & HyundaiFlags.CANFD_LKA_STEER_MSG
+    assert CP.safetyConfigs[-1].safetyParam & HyundaiSafetyFlags.CANFD_LKA_STEER_MSG
+    assert CP.safetyConfigs[-1].safetyParam & HyundaiSafetyFlags.CANFD_ALT_BUTTONS
+    assert not CP.safetyConfigs[-1].safetyParam & HyundaiSafetyFlags.CAMERA_SCC
     assert not CP.flags & HyundaiFlags.CANFD_LFA_SUPPRESS
 
     fingerprint[2][0x362] = 32
     CP_WITH_SUPPRESS = CarInterface.get_params(CAR.HYUNDAI_MUFASA, fingerprint, [], False, False, False)
     assert CP_WITH_SUPPRESS.flags & HyundaiFlags.CANFD_LFA_SUPPRESS
+    assert not CP_WITH_SUPPRESS.flags & HyundaiFlags.HYBRID
 
   def test_alternate_limits(self):
     # Alternate lateral control limits, for high torque cars, verify Panda safety mode flag is set

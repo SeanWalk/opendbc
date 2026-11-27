@@ -107,7 +107,7 @@ class HyundaiFlags(IntFlag):
   SEND_LFA = 2 ** 7
   USE_FCA = 2 ** 8
   CANFD_LKA_STEER_MSG_ALT = 2 ** 9
-  CANFD_LFA_SUPPRESS = 2 ** 10
+  CANFD_LFA_SUPPRESS = 2 ** 21
 
   # these cars use a different gas signal
   HYBRID = 2 ** 10
